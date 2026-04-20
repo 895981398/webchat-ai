@@ -66,7 +66,7 @@ class ControlPanel:
         def api_modes():
             """模式管理API"""
             if request.method == 'POST':
-                data = request.json
+                data = request.get_json(silent=True) or {}
                 mode = data.get('mode')
                 
                 if mode in ['simulate', 'test', 'controlled', 'auto']:
@@ -119,7 +119,7 @@ class ControlPanel:
         @self.app.route('/api/test/send', methods=['POST'])
         def api_test_send():
             """测试发送API"""
-            data = request.json
+            data = request.get_json(silent=True) or {}
             target = data.get('target', '文件传输助手')
             message = data.get('message', '测试消息')
             mode = data.get('mode', 'simulate')
@@ -150,7 +150,7 @@ class ControlPanel:
         @self.app.route('/api/system/command', methods=['POST'])
         def api_system_command():
             """系统命令API"""
-            data = request.json
+            data = request.get_json(silent=True) or {}
             command = data.get('command')
             
             commands = {

@@ -30,7 +30,7 @@ def ensure_keys(keys_file, db_dir):
         try:
             with open(keys_file, encoding="utf-8") as f:
                 keys = json.load(f)
-        except (json.JSONDecodeError, ValueError):
+        except (OSError, json.JSONDecodeError, ValueError):
             keys = {}
         # 检查密钥是否匹配当前 db_dir（防止切换账号后误复用旧密钥）
         saved_dir = keys.pop("_db_dir", None)
@@ -61,7 +61,7 @@ def ensure_keys(keys_file, db_dir):
     try:
         with open(keys_file, encoding="utf-8") as f:
             keys = json.load(f)
-    except (json.JSONDecodeError, ValueError):
+    except (OSError, json.JSONDecodeError, ValueError):
         keys = {}
     if not strip_key_metadata(keys):
         print("[!] 未能提取到任何密钥")

@@ -108,8 +108,8 @@ class AutoReplySystem:
         if not self.is_initialized:
             self.initialize()
             
-        username = message_data.get('username', '')
-        content = message_data.get('content', '')
+        username = str(message_data.get('username') or '')
+        content = str(message_data.get('content') or '')
         
         print(f"[AutoReply] 处理消息: {username}")
         print(f"          内容: {content[:50]}...")
@@ -122,17 +122,9 @@ class AutoReplySystem:
         # 生成回复
         reply = self.engine.generate_reply(message_data)
         
-        # 如果是群聊，特殊处理
+        # 群聊策略已在 SafetyController 中统一判定，避免重复判定导致配置冲突
         if self.safety._is_group_chat(username):
             print(f"[AutoReply] 👥 群聊消息处理")
-            
-            # 检查是否@我
-            is_at_me = self.safety._is_mentioned_in_message(content)
-            if not is_at_me:
-                print(f"[AutoReply] ⚠️ 群聊消息未@我，跳过回复")
-                return None
-            else:
-                print(f"[AutoReply] ✅ 群聊消息@了我，继续处理")
         
         # 根据模式处理
         if self.mode == 'simulate':

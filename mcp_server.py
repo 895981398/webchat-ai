@@ -28,19 +28,29 @@ WAL_FRAME_HEADER_SZ = 24
 # ============ 配置加载 ============
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.json")
+_STARTUP_ERRORS = []
 
-with open(CONFIG_FILE, encoding="utf-8") as f:
-    _cfg = json.load(f)
-for _key in ("keys_file", "decrypted_dir"):
-    if _key in _cfg and not os.path.isabs(_cfg[_key]):
-        _cfg[_key] = os.path.join(SCRIPT_DIR, _cfg[_key])
+def _load_config_safely():
+    try:
+        with open(CONFIG_FILE, encoding="utf-8") as f:
+            cfg = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        _STARTUP_ERRORS.append(f"配置加载失败: {e}")
+        return {}
 
-DB_DIR = _cfg["db_dir"]
-KEYS_FILE = _cfg["keys_file"]
-DECRYPTED_DIR = _cfg["decrypted_dir"]
+    for _key in ("keys_file", "decrypted_dir"):
+        if _key in cfg and not os.path.isabs(cfg[_key]):
+            cfg[_key] = os.path.join(SCRIPT_DIR, cfg[_key])
+    return cfg
+
+
+_cfg = _load_config_safely()
+DB_DIR = _cfg.get("db_dir", "")
+KEYS_FILE = _cfg.get("keys_file", "")
+DECRYPTED_DIR = _cfg.get("decrypted_dir", os.path.join(SCRIPT_DIR, "decrypted"))
 
 # 图片相关路径
-_db_dir = _cfg["db_dir"]
+_db_dir = _cfg.get("db_dir", "")
 if os.path.basename(_db_dir) == "db_storage":
     WECHAT_BASE_DIR = os.path.dirname(_db_dir)
 else:
@@ -52,8 +62,19 @@ if not DECODED_IMAGE_DIR:
 elif not os.path.isabs(DECODED_IMAGE_DIR):
     DECODED_IMAGE_DIR = os.path.join(SCRIPT_DIR, DECODED_IMAGE_DIR)
 
-with open(KEYS_FILE, encoding="utf-8") as f:
-    ALL_KEYS = strip_key_metadata(json.load(f))
+def _load_keys_safely(keys_file):
+    if not keys_file:
+        _STARTUP_ERRORS.append("配置缺少 keys_file")
+        return {}
+    try:
+        with open(keys_file, encoding="utf-8") as f:
+            return strip_key_metadata(json.load(f))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
+        _STARTUP_ERRORS.append(f"密钥加载失败: {e}")
+        return {}
+
+
+ALL_KEYS = _load_keys_safely(KEYS_FILE)
 
 # ============ 解密函数 ============
 
@@ -199,7 +220,10 @@ class DBCache:
                 return c_path
 
         tmp_path = self._cache_path(rel_key)
-        enc_key = bytes.fromhex(key_info["enc_key"])
+        try:
+            enc_key = bytes.fromhex(key_info["enc_key"])
+        except (TypeError, ValueError):
+            return None
         full_decrypt(db_path, tmp_path, enc_key)
         if os.path.exists(wal_path):
             decrypt_wal(wal_path, tmp_path, enc_key)

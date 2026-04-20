@@ -76,6 +76,26 @@ python3 main.py decrypt
 
 程序会自动完成：配置检测 → 内存扫描提取密钥 → 解密。首次运行会自动检测微信数据目录并生成 `config.json`。微信只要在运行中即可，无需重启或重新登录。
 
+### 测试说明
+
+自动化回归（纯单元测试）：
+
+```bash
+python3 -m unittest discover -q -s tests
+```
+
+手动脚本测试（依赖微信 GUI/本机环境）：
+
+```bash
+python3 scripts/manual_tests.py actual_send
+python3 scripts/manual_tests.py auto_window
+python3 scripts/manual_tests.py group_chat
+python3 scripts/manual_tests.py integration
+python3 scripts/manual_tests.py final_integration
+```
+
+兼容说明：根目录保留了 `test_*.py` 启动入口，会转发到 `scripts/` 下对应脚本。
+
 如果自动检测失败（例如微信安装在非默认位置），手动创建 `config.json`：
 ```json
 {

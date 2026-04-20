@@ -232,3 +232,23 @@ claude
 ```
 
 前置条件：需要先运行 `find_all_keys.py` 提取密钥，并配置 `config.json`。详见 [README.md](README.md)。
+
+## Test Commands / 测试命令
+
+自动化回归（只跑 `tests/` 下单元测试，不依赖微信 GUI）：
+
+```bash
+python3 -m unittest discover -q -s tests
+```
+
+手动脚本测试（依赖本机微信/图形环境）：
+
+```bash
+python3 scripts/manual_tests.py actual_send
+python3 scripts/manual_tests.py auto_window
+python3 scripts/manual_tests.py group_chat
+python3 scripts/manual_tests.py integration
+python3 scripts/manual_tests.py final_integration
+```
+
+兼容说明：根目录保留 `test_*.py` 同名启动入口，会自动转发到 `scripts/` 下对应脚本。
