@@ -184,8 +184,7 @@ class DBCache:
             if db_mtime == info["db_mt"] and wal_mtime == info["wal_mt"]:
                 self._cache[rel_key] = (db_mtime, wal_mtime, tmp_path)
                 reused += 1
-        if reused:
-            print(f"[DBCache] reused {reused} cached decrypted DBs from previous run", flush=True)
+        # Keep startup fully silent for strict MCP stdio clients.
 
     def _save_persistent_cache(self):
         """持久化缓存映射到磁盘"""
@@ -1759,4 +1758,5 @@ def get_chat_images(chat_name: str, limit: int = 20) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    # OpenClaw launches this server over stdio; force stdio transport explicitly.
+    mcp.run(transport="stdio")

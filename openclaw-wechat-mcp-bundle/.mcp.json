@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "wechat": {
+      "command": "/usr/local/bin/python3",
+      "args": [
+        "/Users/zhang/.openclaw/workspace-coder/wechat-bot-system/wechat-decrypt-main/mcp_stdio_bridge.py"
+      ],
+      "cwd": "/Users/zhang/.openclaw/workspace-coder/wechat-bot-system/wechat-decrypt-main",
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}
