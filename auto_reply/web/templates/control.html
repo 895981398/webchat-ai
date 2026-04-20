@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信自动回复控制面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            min-height: 600px;
+        }
+        
+        .sidebar {
+            background-color: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+            padding: 20px;
+        }
+        
+        .main {
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .mode-button {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background-color: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        
+        .mode-button:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .mode-button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .mode-button .mode-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .mode-button .mode-description {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .test-panel {
+            margin-top: 30px;
+        }
+        
+        .test-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        
+        .result-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running {
+            background-color: #28a745;
+        }
+        
+        .status-stopped {
+            background-color: #dc3545;
+        }
+        
+        .message-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message-item {
+            padding: 10px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .message-item:last-child {
+            border-bottom: none;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .message-content {
+            margin-top: 5px;
+            color: #6c757d;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>微信自动回复机器人</h1>
+            <div class="subtitle">智能助手控制面板</div>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="card">
+                    <h3>控制面板</h3>
+                    <div class="mode-selector">
+                        <button class="mode-button active" onclick="setMode('simulate')">
+                            <div class="mode-name">模拟模式</div>
+                            <div class="mode-description">只生成回复，不发送消息</div>
+                        </button>
+                        <button class="mode-button" onclick="setMode('test')">
+                            <div class="mode-name">测试模式</div>
+                            <div class="mode-description">仅发送给测试联系人</div>
+                        </button>
+                        <button class="mode-button" onclick="setMode('controlled')">
+                            <div class="mode-name">受控模式</div>
+                            <div class="mode-description">仅发送给白名单</div>
+                        </button>
+                        <button class="mode-button" onclick="setMode('auto')">
+                            <div class="mode-name">自动模式</div>
+                            <div class="mode-description">智能判断发送</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>系统状态</h3>
+                    <div id="system-status">
+                        <div class="status-line">
+                            <span class="status-indicator status-running"></span>
+                            <span>运行中</span>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-value" id="stat-messages">0</div>
+                                <div class="stat-label">消息数</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="stat-replies">0</div>
+                                <div class="stat-label">回复数</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="stat-errors">0</div>
+                                <div class="stat-label">错误数</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main">
+                <div class="card">
+                    <h3>消息历史</h3>
+                    <div id="message-list" class="message-list">
+                        <!-- 消息列表将在这里动态加载 -->
+                        <div class="message-item">
+                            <div class="message-sender">系统</div>
+                            <div class="message-content">欢迎使用微信自动回复机器人！</div>
+                            <div class="message-time">刚刚</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card test-panel">
+                    <h3>测试发送</h3>
+                    <div class="test-form">
+                        <div class="form-group">
+                            <label for="test-target">目标联系人：</label>
+                            <input type="text" id="test-target" placeholder="例如：文件传输助手" value="文件传输助手">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="test-message">测试消息：</label>
+                            <textarea id="test-message">你好，我是自动回复机器人测试消息！</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="test-mode">发送模式：</label>
+                            <select id="test-mode">
+                                <option value="simulate" selected>模拟模式</option>
+                                <option value="test">测试模式</option>
+                                <option value="controlled">受控模式</option>
+                                <option value="auto">自动模式</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="sendTestMessage()">发送测试</button>
+                        <button class="btn btn-secondary" onclick="refreshData()">刷新数据</button>
+                    </div>
+                    
+                    <div id="result-panel" class="result-panel">
+                        <!-- 发送结果将在这里显示 -->
+                        等待发送测试...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentMode = 'simulate';
+        let isRefreshing = false;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateModeButtons();
+            loadSystemStatus();
+            loadMessageHistory();
+            
+            // 每5秒刷新一次状态
+            setInterval(loadSystemStatus, 5000);
+            setInterval(loadMessageHistory, 10000);
+        });
+        
+        // 设置模式
+        function setMode(mode) {
+            currentMode = mode;
+            updateModeButtons();
+            
+            fetch('/api/modes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode: mode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('模式设置结果:', data);
+            })
+            .catch(error => {
+                console.error('设置模式失败:', error);
+            });
+        }
+        
+        // 更新模式按钮状态
+        function updateModeButtons() {
+            document.querySelectorAll('.mode-button').forEach(button => {
+                const modeName = button.querySelector('.mode-name').textContent.toLowerCase();
+                if (modeName.includes(currentMode)) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+        
+        // 加载系统状态
+        function loadSystemStatus() {
+            if (isRefreshing) return;
+            
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新统计
+                    document.getElementById('stat-messages').textContent = data.message_stats.total;
+                    document.getElementById('stat-replies').textContent = data.message_stats.replies;
+                    document.getElementById('stat-errors').textContent = data.message_stats.errors;
+                    
+                    // 更新状态指示灯
+                    const statusIndicator = document.querySelector('.status-indicator');
+                    if (data.system.is_running) {
+                        statusIndicator.className = 'status-indicator status-running';
+                    } else {
+                        statusIndicator.className = 'status-indicator status-stopped';
+                    }
+                })
+                .catch(error => {
+                    console.error('加载状态失败:', error);
+                });
+        }
+        
+        // 加载消息历史
+        function loadMessageHistory() {
+            if (isRefreshing) return;
+            
+            fetch('/api/messages?limit=10')
+                .then(response => response.json())
+                .then(data => {
+                    const messageList = document.getElementById('message-list');
+                    messageList.innerHTML = '';
+                    
+                    data.messages.slice().reverse().forEach(msg => {
+                        const messageItem = document.createElement('div');
+                        messageItem.className = 'message-item';
+                        
+                        const sender = msg.message?.username || '未知';
+                        const content = msg.message?.content || '无内容';
+                        const time = new Date(msg.timestamp * 1000).toLocaleTimeString();
+                        
+                        messageItem.innerHTML = `
+                            <div class="message-sender">${sender}</div>
+                            <div class="message-content">${content}</div>
+                            <div class="message-time">${time}</div>
+                        `;
+                        
+                        messageList.appendChild(messageItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载消息历史失败:', error);
+                });
+        }
+        
+        // 发送测试消息
+        function sendTestMessage() {
+            const target = document.getElementById('test-target').value.trim();
+            const message = document.getElementById('test-message').value.trim();
+            const mode = document.getElementById('test-mode').value;
+            
+            if (!target || !message) {
+                alert('请填写目标联系人和消息内容');
+                return;
+            }
+            
+            const resultPanel = document.getElementById('result-panel');
+            resultPanel.textContent = '正在发送...';
+            resultPanel.style.color = '#007bff';
+            
+            fetch('/api/test/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    target: target,
+                    message: message,
+                    mode: mode
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultPanel.textContent = JSON.stringify(data, null, 2);
+                resultPanel.style.color = '#28a745';
+                
+                // 刷新数据
+                setTimeout(() => {
+                    loadSystemStatus();
+                    loadMessageHistory();
+                }, 1000);
+            })
+            .catch(error => {
+                resultPanel.textContent = '发送失败: ' + error;
+                resultPanel.style.color = '#dc3545';
+            });
+        }
+        
+        // 刷新数据
+        function refreshData() {
+            isRefreshing = true;
+            
+            const resultPanel = document.getElementById('result-panel');
+            resultPanel.textContent = '正在刷新数据...';
+            resultPanel.style.color = '#007bff';
+            
+            // 同时刷新所有数据
+            Promise.all([
+                loadSystemStatus(),
+                loadMessageHistory()
+            ]).then(() => {
+                resultPanel.textContent = '数据刷新完成！';
+                resultPanel.style.color = '#28a745';
+                setTimeout(() => {
+                    resultPanel.textContent = '';
+                    isRefreshing = false;
+                }, 2000);
+            }).catch(error => {
+                resultPanel.textContent = '刷新失败: ' + error;
+                resultPanel.style.color = '#dc3545';
+                isRefreshing = false;
+            });
+        }
+        
+        // 添加回车发送功能
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                sendTestMessage();
+            }
+        });
+    </script>
+</body>
+</html>

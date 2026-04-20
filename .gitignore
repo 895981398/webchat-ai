@@ -1,0 +1,54 @@
+# 敏感文件 - 绝对不能上传
+all_keys.json
+wechat_key.txt
+config.json
+
+# 解密后的数据库和图片
+decrypted/
+*.db
+*.db-shm
+*.db-wal
+decoded_images/
+
+# 日志和运行时文件
+logs/
+*.log
+error.log
+debug.log
+sent_messages.log
+received_messages.log
+
+# PID和状态文件
+.bot_info
+.bot_pid
+*.pid
+.status
+
+# Python缓存
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+
+# 备份和临时文件
+backup_auto_reply/
+*.backup*
+*.bak
+*.tmp
+*.temp
+*.tar.gz
+*.zip
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地配置 (从模板复制)
+auto_reply_config.local.json
+
+# IDE配置
+.vscode/
+.idea/
+*.swp
+*.swo

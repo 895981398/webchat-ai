@@ -1,0 +1,109 @@
+{
+  "auto_reply": {
+    "enabled": true,
+    "mode": "test",
+    "user_name": "张哥",
+    "nickname": "张总",
+    "wechat_id": "zhangjianpeng4921",
+    "display_name": "张哥（AI助手）",
+    "reply_engine": {
+      "model": "keyword",
+      "keywords_file": "auto_reply/rules/keywords.json",
+      "llm_endpoint": "http://localhost:8000/v1/chat/completions",
+      "llm_model": "gpt-3.5-turbo",
+      "max_tokens": 100,
+      "temperature": 0.7
+    },
+    "safety_controller": {
+      "enabled": true,
+      "rules_file": "auto_reply/rules/safety_rules.json",
+      "block_unknown": false,
+      "block_blacklist": true,
+      "rate_limit": {
+        "max_messages_per_hour": 30,
+        "min_reply_interval_seconds": 10
+      }
+    },
+    "sender": {
+      "default_mode": "airtest",
+      "airtest": {
+        "enabled": true,
+        "wechat_path": "/Applications/WeChat.app",
+        "detect_confidence": 0.8,
+        "max_retry": 3,
+        "humanize": true,
+        "debug": false
+      },
+      "pyautogui": {
+        "enabled": true
+      },
+      "applescript": {
+        "enabled": true
+      },
+      "wxauto": {
+        "enabled": false
+      }
+    },
+    "contacts": {
+      "test_contacts": [
+        "文件传输助手",
+        "自己"
+      ],
+      "whitelist": [],
+      "blacklist": [
+        "微信团队",
+        "腾讯客服"
+      ],
+      "group_whitelist": [],
+      "group_blacklist": []
+    },
+    "features": {
+      "auto_reply_groups": false,
+      "auto_reply_private": true,
+      "smart_filtering": true,
+      "log_all_messages": true,
+      "enable_ai_reply": false
+    },
+    "logs": {
+      "enabled": true,
+      "sent_messages_file": "sent_messages.log",
+      "received_messages_file": "received_messages.log",
+      "max_file_size_mb": 10,
+      "backup_count": 5
+    },
+    "window": {
+      "enabled": true,
+      "auto_activate": true,
+      "adjust_size": true,
+      "optimal_width": 1200,
+      "optimal_height": 800,
+      "max_retry": 3
+    },
+    "process": {
+      "kill_before_start": true,
+      "force_kill": true,
+      "exclude_self": true
+    },
+    "advanced": {
+      "auto_start_wechat": true,
+      "check_wechat_running": true,
+      "restart_on_failure": true,
+      "max_failures": 3,
+      "retry_delay_seconds": 30
+    },
+    "group": {
+      "enabled": false,
+      "whitelist_mode": true,
+      "reply_only_at_me": true,
+      "strict_mention_check": true,
+      "whitelist": [],
+      "blacklist": []
+    }
+  },
+  "monitor_web": {
+    "port": 5678,
+    "host": "localhost",
+    "polling_interval_ms": 30,
+    "enable_auto_reply": true
+  }
+}

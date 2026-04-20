@@ -1,0 +1,42 @@
+{
+  "rate_limit": {
+    "max_per_minute": 3,
+    "max_per_hour": 30,
+    "min_interval_seconds": 20
+  },
+  "time_restriction": {
+    "night_start": 23,
+    "night_end": 7
+  },
+  "blacklist": [],
+  "whitelist": [],
+  "sensitive_keywords": [
+    "政治", "敏感", "违法", "违规", "广告", "垃圾",
+    "色情", "暴力", "诈骗", "钓鱼", "病毒", "恶意",
+    "赌博", "毒品", "反动", "邪教", "恐怖", "分裂"
+  ],
+  "test_contacts": [
+    "文件传输助手",
+    "自己"
+  ],
+  "modes": {
+    "simulate": {
+      "description": "模拟模式，只生成回复不发送",
+      "allowed": true,
+      "default": true
+    },
+    "test": {
+      "description": "测试模式，只发送给测试联系人",
+      "allowed": true
+    },
+    "controlled": {
+      "description": "受控模式，只发送给白名单",
+      "allowed": false,
+      "whitelist_required": true
+    },
+    "auto": {
+      "description": "自动模式，智能判断发送",
+      "allowed": false
+    }
+  }
+}
