@@ -8,16 +8,16 @@
 - `openclaw-wechat-mcp-bundle/.mcp.json` 使用 `python3` + `launch_mcp.py`，**无硬编码绝对路径**
 - 若本机没有 `python3` 命令，可在已安装的 `.mcp.json` 里把 `command` 改成你的解释器路径（例如 Homebrew：`/usr/local/bin/python3`）
 
-## 2. 两套工具前缀（`wechat__*` 与 `WeChat-2__*`）
+## 2. 工具前缀收敛（仅保留 `WeChat-2__*`）
 
-若 OpenClaw 里同时注册了 **bundle 的 wechat** 和 **`~/.openclaw/openclaw.json` 里 `mcp.servers` 的另一条 WeChat**，会出现两套同名能力、前缀不同，浪费上下文且易混用。
+若 OpenClaw 里同时注册了 **bundle 的 WeChat-2** 和 **`~/.openclaw/openclaw.json` 里 `mcp.servers` 的另一条 WeChat**，会出现两套同名能力、前缀不同，浪费上下文且易混用。
 
-**建议只保留一条来源：**
+**建议只保留一条来源（当前推荐保留 WeChat-2）：**
 
-- 只用 bundle：从 `openclaw.json` 的 `mcp.servers` 中移除重复的 WeChat 条目（或禁用对应插件），保留插件 bundle 提供的 `wechat__*`。
+- 只用 bundle：从 `openclaw.json` 的 `mcp.servers` 中移除重复的 WeChat 条目（或禁用对应插件），保留插件 bundle 提供的 `WeChat-2__*`。
 - 只用全局 `mcp.servers`：卸载或禁用本仓库的 wechat bundle，并在 `mcp.servers` 中只配置一条指向 `mcp_stdio_bridge.py` 的服务。
 
-配置完成后在新会话执行 `/tools verbose`，确认只剩一套 `wechat__`（或你故意保留的一套）。
+配置完成后在新会话执行 `/tools verbose`，确认只剩一套 `WeChat-2__`。
 
 ## 3. 可选调试日志（不污染 stdio）
 
@@ -36,7 +36,7 @@ export WECHAT_MCP_DEBUG_LOG=/tmp/wechat-mcp-debug.log
 
 1. Gateway 正常：`openclaw gateway status` 中 RPC probe ok。
 2. 新会话：`/new wechat-mcp`（或你的专用 agent），再 `/tools verbose`。
-3. 列表中应出现 `wechat__get_recent_sessions` 等；若出现两套前缀，按第 2 节收敛配置。
+3. 列表中应出现 `WeChat-2__get_recent_sessions` 等；若出现两套前缀，按第 2 节收敛配置。
 4. 调用失败时查看 `WECHAT_MCP_DEBUG_LOG`（若已设置）与 `openclaw` 日志文件。
 
 ## 5. 自动化测试
