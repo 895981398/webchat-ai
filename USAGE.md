@@ -235,6 +235,16 @@ claude
 
 ## OpenClaw 会话内使用（推荐）
 
+完整说明（安装路径、去重两套 `wechat__` / `WeChat-2__`、调试日志）见 [docs/openclaw-wechat-mcp.md](docs/openclaw-wechat-mcp.md)。
+
+Bundle 使用仓库内 `openclaw-wechat-mcp-bundle/launch_mcp.py` 解析项目根目录，**无需在 `.mcp.json` 里写死本机绝对路径**；仍需把整个仓库克隆到本机。
+
+排障时可设置文件日志（不污染 MCP stdio）：
+
+```bash
+export WECHAT_MCP_DEBUG_LOG=/tmp/wechat-mcp-debug.log
+```
+
 如果在 OpenClaw 中使用，建议固定在同一个 agent 会话里调用 `wechat__*` 工具，避免混用不同前缀实例。
 
 ```text

@@ -50,5 +50,8 @@ auto_reply_config.local.json
 # IDE配置
 .vscode/
 .idea/
+
+# Local scratch (not for commit)
+.gitignore_clean
 *.swp
 *.swo

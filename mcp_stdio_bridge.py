@@ -15,6 +15,17 @@ import subprocess
 import sys
 
 
+def _wechat_mcp_debug_log(msg: str) -> None:
+    path = os.environ.get("WECHAT_MCP_DEBUG_LOG", "").strip()
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write("[mcp_stdio_bridge] %s\n" % msg)
+    except OSError:
+        pass
+
+
 def _set_nonblocking(fd):
     flags = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
@@ -89,6 +100,7 @@ def _drain_framed_messages(buf):
 
 
 def main():
+    _wechat_mcp_debug_log("start pid=%s cwd=%s" % (os.getpid(), os.getcwd()))
     script_dir = os.path.dirname(os.path.abspath(__file__))
     server_path = os.path.join(script_dir, "mcp_server.py")
     proc = subprocess.Popen(

@@ -1,5 +1,5 @@
 {
   "name": "openclaw-wechat-mcp-bundle",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Expose local WeChat MCP server to OpenClaw tool runtime."
 }

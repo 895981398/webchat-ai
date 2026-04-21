@@ -30,6 +30,17 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.json")
 _STARTUP_ERRORS = []
 
+
+def _wechat_mcp_debug_log(msg: str) -> None:
+    path = os.environ.get("WECHAT_MCP_DEBUG_LOG", "").strip()
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write("[mcp_server] %s\n" % msg)
+    except OSError:
+        pass
+
 def _load_config_safely():
     try:
         with open(CONFIG_FILE, encoding="utf-8") as f:
@@ -75,6 +86,7 @@ def _load_keys_safely(keys_file):
 
 
 ALL_KEYS = _load_keys_safely(KEYS_FILE)
+_wechat_mcp_debug_log("ready keys_loaded=%s" % bool(ALL_KEYS))
 
 # ============ 解密函数 ============
 
